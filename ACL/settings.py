@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'datamanagement',
     'phonenumber_field',
-    'django.contrib.gis'
+    'django.contrib.gis',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

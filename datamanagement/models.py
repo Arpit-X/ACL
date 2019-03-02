@@ -19,7 +19,7 @@ class User(AbstractUser):
     govt_id_type = models.CharField(choices=GOVT_ID_CHOICES, max_length=6)
     govt_id = models.CharField(max_length=15)
     address = models.TextField(blank=True, null=True)
-    location = models.PointField()
+    location = models.PointField(srid=4326, null=True)
     image = models.ImageField()
     contact_no = PhoneNumberField()
 
@@ -35,7 +35,7 @@ class Organisations(models.Model):
     type = models.CharField(choices=ORGANISATION_CHOICES, max_length=10)
     name = models.CharField(max_length=30)
     code = models.CharField(max_length=10)
-    location = models.PointField()
+    location = models.PointField(srid=4326)
 
 
 class ChildData(models.Model):
@@ -48,7 +48,7 @@ class ChildData(models.Model):
     parent_id = models.CharField(blank=True, null=True, max_length=15)
     is_orphan = models.BooleanField(default=False)
     orphanage = models.ForeignKey(Organisations, blank=True, null=True, related_name="orphanage", on_delete=models.CASCADE)
-    birth_location = models.PointField()
+    birth_location = models.PointField(srid=4326)
     school = models.ForeignKey(Organisations, blank=True, null=True, related_name="school", on_delete=models.CASCADE)
     enrolled_in_school = models.BooleanField(default=False)
     enrolled_in_orphanage = models.BooleanField(default=False)
