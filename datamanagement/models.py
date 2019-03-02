@@ -19,8 +19,9 @@ class User(AbstractUser):
     govt_id_type = models.CharField(choices=GOVT_ID_CHOICES, max_length=6)
     govt_id = models.CharField(max_length=15)
     address = models.TextField(blank=True, null=True)
-    location = models.PointField(null=True)
+    location = models.PointField()
     image = models.ImageField()
+    contact_no = PhoneNumberField()
 
 
 class Organisations(models.Model):
