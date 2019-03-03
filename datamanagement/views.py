@@ -13,15 +13,18 @@ class ChildViewSet(viewsets.ModelViewSet):
     queryset = ChildData.objects.all()
     serializer_class = ChildDataSerialiser
 
-    @detail_route(methods=['get'])
-    def add_to_school(self, request, pk):
+    @detail_route(methods=['post'])
+    def add_child(self, request, pk):
         child = get_object_or_404(ChildData, pk=pk)
-        organisation = get_object_or_404(Organisations, code=request.GET.get("school"))
-        if organisation.type != "school":
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=f"{organisation.name}Not a school")
+        organisation = get_object_or_404(Organisations, code=request.data.get("organisation"))
+        if organisation.type != request.data.get("to"):
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=f"{organisation.name} is not a {request.data.get('to')}")
         if organisation.incharge != request.user:
             return Response(status=status.HTTP_400_BAD_REQUEST, data="Unauthorised request")
-        child.school = organisation
+        if request.data.get("to") == "school":
+            child.school = organisation
+        elif request.data.get("to") == "orphanage":
+            child.orphanage = organisation
         child.save()
         return Response(status=status.HTTP_200_OK)
 
