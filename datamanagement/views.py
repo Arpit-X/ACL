@@ -13,6 +13,14 @@ class ChildViewSet(viewsets.ModelViewSet):
     queryset = ChildData.objects.all()
     serializer_class = ChildDataSerialiser
 
+    def create(self, request, *args, **kwargs):
+        organisation = get_object_or_404(Organisations, pk=int(request.data.get("registered_by")))
+        if organisation.type not in {"hospital", "anganwadi"}:
+            return Response(status=status.HTTP_401_UNAUTHORIZED, data="Children can either be added by Hospitals or Anganwadis")
+        if request.user != organisation.incharge:
+            return Response(status=status.HTTP_401_UNAUTHORIZED, data="Unauthorised request")
+        return super(ChildViewSet, self).create(request, *args, **kwargs)
+
     @detail_route(methods=['post'])
     def add_child(self, request, pk):
         child = get_object_or_404(ChildData, pk=pk)
@@ -20,7 +28,7 @@ class ChildViewSet(viewsets.ModelViewSet):
         if organisation.type != request.data.get("to"):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=f"{organisation.name} is not a {request.data.get('to')}")
         if organisation.incharge != request.user:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data="Unauthorised request")
+            return Response(status=status.HTTP_401_UNAUTHORIZED, data="Unauthorised request")
         if request.data.get("to") == "school":
             child.school = organisation
         elif request.data.get("to") == "orphanage":
