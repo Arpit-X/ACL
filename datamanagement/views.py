@@ -38,15 +38,27 @@ class ChildViewSet(viewsets.ModelViewSet):
         child.save()
         return Response(status=status.HTTP_200_OK)
 
+    @detail_route(methods="post")
+    def remove(self, request, pk):
+        child = get_object_or_404(ChildData, pk=pk)
+        if request.data.get("from") == "school" and request.user != child.school.incharge:
+            child.enrolled_in_school = False
+        elif request.data.get("from") == "school" and request.user != child.orphanage.incharge:
+            child.enrolled_in_orphanage = False
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED, data="Unauthorised request")
+        child.save()
+        return Response(status=status.HTTP_200_OK)
+
     @list_route(methods=["get"])
     def uneducated(self, request):
         data = ChildData.objects.filter(enrolled_in_school=False)
         serialised = ChildDataSerialiser(data, many=True)
-        return Response(serialised.data)
+        return Response(serialised.data, status=status.HTTP_200_OK)
 
     @list_route(methods=["get"])
     def unsheltered(self, request):
         data = ChildData.objects.filter(is_orphan=True, enrolled_in_orphanage=True)
         serialised = ChildDataSerialiser(data, many=True)
-        return Response(serialised.data)
+        return Response(serialised.data, status=status.HTTP_200_OK)
 
