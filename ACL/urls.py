@@ -19,12 +19,15 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path, include
 
 from ACL import settings
-from datamanagement import urls
+from datamanagement import urls as datamgmt_urls
+from complaints import urls as complaints_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'^api-auth/', include('rest_framework.urls')),
-    path('datamgmnt/', include(urls))
+    path('datamgmnt/', include(datamgmt_urls)),
+    path('complaints/', include(complaints_urls))
+
 ]
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -8,7 +8,7 @@ class Complaint(models.Model):
     STATUS_CHOICE = (
         ("submitted", "Submitted"),
         ("in_review", "In Review"),
-        ("in_action", "IN Action"),
+        ("in_action", "In Action"),
         ("declined", "Declined"),
         ("done", "Done")
     )

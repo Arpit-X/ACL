@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from complaints.models import Complaint
+from complaints.serialisers import ComplaintSerialiser
 
-# Create your views here.
+
+class ComplaintViewset(viewsets.ModelViewSet):
+    queryset = Complaint.objects.all()
+    serializer_class = ComplaintSerialiser
