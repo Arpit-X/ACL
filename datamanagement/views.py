@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, status
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 from datamanagement.models import ChildData, Organisations
@@ -31,8 +31,22 @@ class ChildViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_401_UNAUTHORIZED, data="Unauthorised request")
         if request.data.get("to") == "school":
             child.school = organisation
+            child.enrolled_in_school = True
         elif request.data.get("to") == "orphanage":
             child.orphanage = organisation
+            child.enrolled_in_orphanage = True
         child.save()
         return Response(status=status.HTTP_200_OK)
+
+    @list_route(methods=["get"])
+    def uneducated(self, request):
+        data = ChildData.objects.filter(enrolled_in_school=False)
+        serialised = ChildDataSerialiser(data, many=True)
+        return Response(serialised.data)
+
+    @list_route(methods=["get"])
+    def unsheltered(self, request):
+        data = ChildData.objects.filter(is_orphan=True, enrolled_in_orphanage=True)
+        serialised = ChildDataSerialiser(data, many=True)
+        return Response(serialised.data)
 
